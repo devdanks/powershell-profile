@@ -41,7 +41,7 @@ For beginners:
 $script:Config = @{
     DebugMode          = $false          # Set $true for verbose debug output
     UpdateIntervalDays = 7               # Days between automatic update checks (‑1 = always)
-    RepoRoot           = "https://raw.githubusercontent.com"   # Your own repo for future updates (change this to your fork)
+    RepoRoot           = "https://raw.githubusercontent.com/devdanks/powershell-profile"   # Your own repo for future updates
     TimeFilePath       = "$env:USERPROFILE\Documents\PowerShell\LastExecutionTime.txt"
     LogLevel           = "Info"          # Minimum level of messages to display (Debug, Info, Warning, Error)
     MaxRetries         = 3               # How many times to retry failed operations
@@ -263,8 +263,8 @@ function Update-Profile {
     }
     try {
         Write-ProfileLog -Level Info -Message "Fetching latest profile from $($script:Config.RepoRoot)"
-        $url = "$($script:Config.RepoRoot)/master/my_profile.ps1"
-        $temp = "$env:TEMP\my_profile.ps1"
+        $url = "$($script:Config.RepoRoot)/master/Microsoft.PowerShell_profile.ps1"
+        $temp = "$env:TEMP\Microsoft.PowerShell_profile.ps1"
         Invoke-RestMethod -Uri $url -OutFile $temp -ErrorAction Stop
 
         $oldHash = Get-FileHash $PROFILE -ErrorAction SilentlyContinue
