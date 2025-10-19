@@ -317,24 +317,49 @@ function Test-CommandExists {
 
 #region Editor Configuration
 function Set-Editor {
-    if (Get-Variable -Name "EDITOR_Override" -ErrorAction SilentlyContinue) {
-        $EDITOR = $EDITOR_Override
+    if (Get-Variable -Name "EDITOR_Override" -Scope Global -ErrorAction SilentlyContinue) {
+        $Global:EDITOR = $EDITOR_Override
     } else {
-        $EDITOR = 'notepad'  # Default editor
-        if (Test-CommandExists nvim) { $EDITOR = 'nvim' }
-        elseif (Test-CommandExists pvim) { $EDITOR = 'pvim' }
-        elseif (Test-CommandExists vim) { $EDITOR = 'vim' }
-        elseif (Test-CommandExists vi) { $EDITOR = 'vi' }
-        elseif (Test-CommandExists code) { $EDITOR = 'code' }
-        elseif (Test-CommandExists codium) { $EDITOR = 'codium' }
-        elseif (Test-CommandExists notepad++) { $EDITOR = 'notepad++' }
-        elseif (Test-CommandExists sublime_text) { $EDITOR = 'sublime_text' }
+        # Check for preferred editors: code first, then nano
+        if (Test-CommandExists code) { 
+            $Global:EDITOR = 'code' 
+        } elseif (Test-CommandExists nano) { 
+            $Global:EDITOR = 'nano' 
+        } else {
+            # If neither code nor nano is found, install nano via scoop
+            Write-Host "Neither 'code' nor 'nano' found. Installing nano via scoop..." -ForegroundColor Yellow
+            try {
+                if (-not (Test-CommandExists scoop)) {
+                    Write-Warning "Scoop not found. Please install VS Code or nano manually."
+                    $Global:EDITOR = 'notepad'  # Fallback to notepad
+                } else {
+                    scoop install nano
+                    if (Test-CommandExists nano) {
+                        Write-Host "Nano installed successfully!" -ForegroundColor Green
+                        $Global:EDITOR = 'nano'
+                    } else {
+                        Write-Warning "Failed to install nano. Falling back to notepad."
+                        $Global:EDITOR = 'notepad'
+                    }
+                }
+            } catch {
+                Write-Warning "Error installing nano: $_. Falling back to notepad."
+                $Global:EDITOR = 'notepad'
+            }
+        }
     }
-    Set-Alias -Name vim -Value $EDITOR -Force
+    Set-Alias -Name vim -Value $Global:EDITOR -Scope Global -Force
 }
 Set-Editor
 
-function Edit-Profile { vim $PROFILE.CurrentUserAllHosts }
+function Edit-Profile { 
+    # Ensure we have a suitable editor before trying to open the profile
+    if ([string]::IsNullOrEmpty($Global:EDITOR) -or -not (Test-CommandExists $Global:EDITOR) -or $Global:EDITOR -eq 'notepad') {
+        Set-Editor  # Re-run editor detection
+    }
+    Write-Host "Opening profile with: $Global:EDITOR" -ForegroundColor Green
+    & $Global:EDITOR $PROFILE.CurrentUserAllHosts 
+}
 Set-Alias -Name ep -Value Edit-Profile
 #endregion
 
