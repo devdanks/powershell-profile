@@ -1,0 +1,21 @@
+# PowerShell Profile specific files
+LastExecutionTime.txt
+profile_setup_complete.txt
+
+# Temporary files
+*.tmp
+*.temp
+
+# Logs
+*.log
+
+# Personal configuration overrides
+*_override.ps1
+
+# System files
+Thumbs.db
+.DS_Store
+
+# Backup files
+*.bak
+*.old
