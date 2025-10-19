@@ -13,7 +13,7 @@ This is a PowerShell profile based on Chris Titus Tech's template with override 
 ```powershell
 # Override variables by appending _Override
 $debug_Override = $true
-$EDITOR_Override = "nvim"
+$EDITOR_Override = "code"
 
 # Override functions the same way
 function Get-Theme_Override {
@@ -30,7 +30,7 @@ function Get-Theme_Override {
 
 ### Editor Priority Chain
 ```powershell
-nvim → pvim → vim → vi → code → codium → notepad++ → sublime_text → notepad
+code → nano → auto-install nano via scoop → notepad (fallback)
 ```
 
 ### Git Shortcuts Pattern
